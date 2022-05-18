@@ -1,9 +1,10 @@
 var express = require('express');
 var router = express.Router();
+var date = new Date();
 
-/* GET home page. */
+/* GET datetime page. */
 router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+  res.send(`Date and Time: ${date}`);
 });
 
 module.exports = router;
