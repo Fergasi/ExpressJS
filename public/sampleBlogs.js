@@ -34,8 +34,8 @@ const blogPosts = [
       author: "Bobbie Dach",
       id: "5",
     },
-  ];
+];
   
-  module.exports = {
-      blogPosts
-  }
+module.exports = {
+    blogPosts
+}

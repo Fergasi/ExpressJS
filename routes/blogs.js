@@ -4,6 +4,9 @@ var router = express.Router();
 var blogs = require("../public/sampleBlogs");
 const blogPosts = blogs.blogPosts;
 
+//Alternatively: var blogsImport = require("../public/sampleBlogs");
+//Then use blogsImport.blogPosts to access blogs
+
 /* GET blog page. */
 router.get('/', function(req, res, next) {
     res.json(blogPosts);
@@ -20,7 +23,7 @@ router.get('/all', function(req, res){
 });
 
 /* GET blog by ID. */
-router.get('/blogsbyid/:blogId', function (req, res) {
+router.get('/singleBlog/:blogId', function (req, res) {
     const blogId = req.params.blogId;
 
     res.json(findBlogId(blogId))
@@ -43,6 +46,14 @@ let findBlogId = (id) => {
     }
 }
 
+//Alternatively method using array.find
+// const findBlogId2 = (blogID) => {
+//     const foundBlog = blogPosts.find((blog) => {
+//         return blog.id === blogId;
+//     });
+//     return foundBlog;
+// };
+
 //Sort Asc & Dsc
 let sortBlogs = (order) => {
     let posts = blogPosts;
@@ -54,3 +65,27 @@ let sortBlogs = (order) => {
         return posts;
     }
 }
+
+//Alternative Sort Asc & Dsc syntax
+// blogs.sort((a, b) => {
+//     const aCreatedAt = a.createdAt;
+//     const bCreatedAt = b.createdAt;
+//     let sort = req.query.sort;
+//     if (sort === 'asc') {
+//         if (aCreatedAt < bCreatedAt) {
+//             return -1;
+//         }
+//         if (aCreatedAt > bCreatedAt) {
+//             return 1;
+//         }
+//     }
+//     if (sort === 'desc') {
+//         if (aCreatedAt > bCreatedAt) {
+//             return -1;
+//         }
+//         if (aCreatedAt < bCreatedAt) {
+//             return 1;
+//         }
+//     }
+//     return 0
+// })
