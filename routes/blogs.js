@@ -32,6 +32,16 @@ router.get('/singleBlog/:blogId', function (req, res) {
     //http://localhost:4000/blogs/blogsbyid/1
 })
 
+router.get('/postblog', (req, res, next) => {
+    res.render('postBlog');
+})
+
+router.post('/submit', (req, res) => {
+    res.status(201);
+    let newBlog = req.body;
+    blogs.blogPosts.push(addBlogPost(newBlog));
+})
+
 module.exports = router;
 
 //Helper Functions
@@ -89,3 +99,17 @@ let sortBlogs = (order) => {
 //     }
 //     return 0
 // })
+
+//Construct object for blog post entry
+let addBlogPost = (body) => {
+    let id = blogPosts.length + 1;
+    newDate = new Date();
+    let blog = {
+      createdAt: newDate.toISOString(),
+      title: body.title,
+      text: body.text,
+      author: body.author,
+      id: id.toString()
+    }
+    return blog
+}
