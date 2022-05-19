@@ -32,14 +32,40 @@ router.get('/singleBlog/:blogId', function (req, res) {
     //http://localhost:4000/blogs/blogsbyid/1
 })
 
-router.get('/postblog', (req, res, next) => {
+//Post Blogs Router
+router.get('/postBlog', (req, res, next) => {
     res.render('postBlog');
 })
 
+//Submit Post Blog Router
 router.post('/submit', (req, res) => {
     res.status(201);
     let newBlog = req.body;
     blogs.blogPosts.push(addBlogPost(newBlog));
+})
+
+//Display Blogs Router
+router.get('/displayBlogs', (req, res, next) => {
+    res.render('displayBlogs');
+})
+
+//Display Single Blog Router
+router.get('/displaySingleBlog', (req, res, next) => {
+    res.render('displaySingleBlog');
+})
+
+//Delete Single Blog Router
+router.delete('/deleteBlog/:blogId', (req, res, next) => {
+    const blogToDelete = req.params.blogId;
+    
+    for (let i = 0; i < blogPosts.length; i++){
+        let blog = blogPosts[i];
+        if (blog.id === blogToDelete){
+            blogPosts.splice(i,1);
+        }
+    }
+
+   res.send('successfully deleted');
 })
 
 module.exports = router;
