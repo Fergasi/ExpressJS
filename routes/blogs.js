@@ -4,19 +4,44 @@ var router = express.Router();
 var blogs = require("../public/sampleBlogs");
 const blogPosts = blogs.blogPosts;
 
+const { blogsDB } = require('../mongo');
+
 //Alternatively: var blogsImport = require("../public/sampleBlogs");
 //Then use blogsImport.blogPosts to access blogs
 
 /* GET blog page. */
-router.get('/', function(req, res, next) {
-    res.json(blogPosts);
+router.get('/', async function (req, res, next) {
+    try {
+        const collection = await blogsDB().collection("blogs50");
+        const blogs50 = await collection.find({}).sort({ id: 1 }).toArray();
+        res.json(blogs50);
+    } catch (e) {
+        res.status(500).send("Error fetching posts" + e)
+    }
 });
 
 /* GET all sorted blog posts. */
-router.get('/all', function(req, res){
-    let sort = req.query.sort;
+router.get('/all', async function(req, res){
+    try {
+        let sortField = req.query.field;
+        let sort = req.query.order;
 
-    res.json(sortBlogs(sort));
+        if (sort === 'asc'){
+            sort = 1
+        }
+        if (sort === 'desc'){
+            sort = -1
+        }
+
+        const collection = await blogsDB().collection("blogs50");
+        const blogs50 = await collection.find({}).sort({ [sortField]: sort }).toArray();
+
+        res.json(blogs50);
+
+    } catch (e) {
+        res.status(500).send("Error fetching posts" + e)
+    }
+
     //Example URL to call this:
     //http://localhost:4000/blogs/all/?sort=asc
     //http://localhost:4000/blogs/all/?sort=desc

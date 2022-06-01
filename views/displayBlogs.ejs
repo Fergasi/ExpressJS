@@ -8,18 +8,23 @@
 
             $("#getBlogs").click(function () {
                 var sortOrder;
+                var sortField;
                 var url = "http://localhost:4000/blogs/all";
                 $("#blogList").empty();
-                sortOrder = $("#sorting option:selected").val();
+                sortField = "?field=" + $("#sortField option:selected").val();
+                sortOrder =  "&order=" + $("#sorting option:selected").val();
 
-                if (sortOrder === "asc" || sortOrder === "desc"){
-                    url = url + "?sort=" + sortOrder
-                }
+                // if (sortOrder === "asc" || sortOrder === "desc"){
+                //     url = url + "?sort=" + sortOrder
+                // }
 
-                $.get(url, function (blogs) {
+                $.get(url + sortField + sortOrder, function (blogs) {
                     blogs.forEach((blog) => {
                     $("#blogList").append("<h3>" + blog.title + "</h3>");
+                    $("#blogList").append("<div></div>");
                     $("#blogList").append("<div> Author: " + blog.author + "</div>");
+                    $("#blogList").append("<div> Created At: " + blog.createdAt + "</div>");
+                    $("#blogList").append("<div>" + 'ID: ' + blog.id + "</div>");
                     $("#blogList").append("<br>");
                     $("#blogList").append("<div>" + blog.text + "</div>");
                     $("#blogList").append("<br>");
@@ -34,10 +39,18 @@
     <h1>Display Blogs</h1>
     <button id="getBlogs">Get Blogs</button>
 
+    <label for="SortField">Sort By:</label>
+
+    <select name="SortField" id="sortField">
+        <option value="id">ID</option>
+        <option value="title">Title</option>
+        <option value="author">Author</option>
+        <option value="createdAt">Date Created</option>
+    </select>
+
     <label for="Sort">Sort:</label>
 
     <select name="Sort" id="sorting">
-        <option value="all">All</option>
         <option value="asc">Ascending</option>
         <option value="desc">Descending</option>
     </select>
