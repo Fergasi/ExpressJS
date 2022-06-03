@@ -48,13 +48,18 @@ router.get('/all', async function(req, res){
 });
 
 /* GET blog by ID. */
-router.get('/singleBlog/:blogId', function (req, res) {
-    const blogId = req.params.blogId;
+router.get('/singleBlog/:blogId', async function (req, res) {
+    try {
+        const blogId = req.params.blogId;
 
-    res.json(findBlogId(blogId))
-    //Example URL to call this:
-    //http://localhost:4000/blogs/blogsbyid/5
-    //http://localhost:4000/blogs/blogsbyid/1
+        const collection = await blogsDB().collection("blogs50");
+        const blogs50 = await collection.findOne({id: Number(blogId)});
+
+        res.json(blogs50);
+
+    } catch (e) {
+        res.status(500).send("Error fetching posts" + e)
+    }
 })
 
 //Post Blogs Router
@@ -63,10 +68,32 @@ router.get('/postBlog', (req, res, next) => {
 })
 
 //Submit Post Blog Router
-router.post('/submit', (req, res) => {
-    res.status(201);
-    let newBlog = req.body;
-    blogs.blogPosts.push(addBlogPost(newBlog));
+router.post('/submit', async (req, res) => {
+    try {
+        res.status(201);
+        const collection = await blogsDB().collection("blogs50");
+        const sortedBlogArray =  await collection.find({}).sort({ id: 1 }).toArray();
+        lastBlog = sortedBlogArray[sortedBlogArray.length - 1]
+
+        let blog = {
+            createdAt: new Date(),
+            title: req.body.title,
+            text: req.body.text,
+            author: req.body.author,
+            lastModified: new Date(),
+            category: req.body.category,
+            id: Number(lastBlog.id + 1)
+        }
+
+        await collection.insertOne(blog);
+
+        //res.json(newBlog + 'Successful!');
+
+    } catch (e) {
+        res.status(500).send("Error fetching posts" + e)
+    }
+    
+    //blogs.blogPosts.push(addBlogPost(newBlog));
 })
 
 //Display Blogs Router
@@ -156,11 +183,11 @@ let addBlogPost = (body) => {
     let id = blogPosts.length + 1;
     newDate = new Date();
     let blog = {
-      createdAt: newDate.toISOString(),
+      createdAt: ISODate(newDate),
       title: body.title,
       text: body.text,
       author: body.author,
-      id: id.toString()
+      id: Number(id)
     }
     return blog
 }

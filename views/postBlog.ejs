@@ -9,22 +9,40 @@
           title = $("#title").val();
           text = $("#text").val();
           author = $("#author").val();
+          category = $("#category").val();
           $.post(
             "http://localhost:4000/blogs/submit",
-            { title: title, text: text, author: author }
+            { title: title, text: text, author: author, category: category }
           );
         });
       });
     </script>
   </head>
-  <body>
+    <body>
+     <h2>
+       <a href="http://localhost:4000/blogs/displayBlogs">Display Blog</a>
+       <br>
+       <a href="http://localhost:4000/blogs/displaySingleBlog">Display Single Blog</a>
+       <br>
+       <a href="http://localhost:4000/blogs/postBlog">Post Blog</a>
+     </h2>
     <h1>Add New Blog</h1>
     <label>Blog Title</label>
     <input id="title" size="40" type="text" />
+    <br>
+    <br>
     <label>Blog Text</label>
-    <input id="text" size="300" type="text" />
+    <input id="text" size="40" type="text" />
+    <br>
+    <br>
     <label>Blog Author</label>
     <input id="author" size="40" type="text" />
+    <br>
+    <br>
+    <label>Category</label>
+    <input id="category" size="40" type="text" />
+    <br>
+    <br>
     <input id="submit" type="button" value="Submit" />
   </body>
 </html>
