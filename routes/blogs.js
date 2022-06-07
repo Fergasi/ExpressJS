@@ -121,7 +121,7 @@ router.put('/updateBlog/:blogId', async function (req, res) {
         const originalBlog = await collection.findOne({id: blogId});
 
         if (!originalBlog){
-            res.send('Blog with ID: ' + blogId) + 'does not exist'
+            res.send('* Blog with ID: ' + blogId + ' does not exist... Please enter a valid Blog ID')
         } else {
             let updateBlog = req.body;
             const blogTitle = updateBlog.title ? updateBlog.title : originalBlog.title;
@@ -162,8 +162,13 @@ router.delete('/deleteBlog/:blogId', async (req, res) => {
     try {
         const blogId = Number(req.params.blogId);
         const collection = await blogsDB().collection('blogs50');
-        await collection.deleteOne({id: blogId})
-        res.status(200).send('Successfully Deleted')
+        const blogToDelete = await collection.deleteOne({id: blogId})
+        if (blogToDelete.deletedCount === 1) {
+            res.send('Successfully Deleted').status(200) 
+        } else {
+           res.send('Could not find Blog ID to delete... Please enter a valid Blog ID').status(404)
+        }
+        
     } catch (error) {
         res.status(500).send("Error, could not delete blog." + error)
     }

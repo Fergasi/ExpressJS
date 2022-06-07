@@ -25,26 +25,32 @@
         var blogId;
         $("#getSingleBlog").click(function () {
           blogId = $("#blogId").val();
-          $.get(
-            "http://localhost:4000/blogs/singleBlog/" + blogId,
-            function (blog) {
-                if (blog.title){$("#blogTitle").html("<h3>" + blog.title + "</h3>")} else {$("#blogTitle").html('')};
-                if (blog.author){$("#blogAuthor").html("<div> Author: " + blog.author + "</div>")} else {$("#blogAuthor").html('')};
-                if (blog.createdAt){$("#blogCreatedAt").html("<div> Created At: " + blog.createdAt + "</div>")} else {$("#blogCreatedAt").html('')};
-                if (blog.text){$("#blogText").html(blog.text)} else {$("#blogText").html('')};
-            }
-          );
+          if (!blogId){
+            $("#blogText").html('Please enter a valid Blog ID...')
+          } else {
+            $.get(
+             "http://localhost:4000/blogs/singleBlog/" + blogId,
+              function (blog) {
+                  if (blog.title){$("#blogTitle").html("<h3>" + blog.title + "</h3>")} else {$("#blogTitle").html('')};
+                  if (blog.author){$("#blogAuthor").html("<div> Author: " + blog.author + "</div>")} else {$("#blogAuthor").html('')};
+                  if (blog.createdAt){$("#blogCreatedAt").html("<div> Created At: " + blog.createdAt + "</div>")} else {$("#blogCreatedAt").html('')};
+                  if (blog.text){$("#blogText").html(blog.text)} else {$("#blogText").html('')};
+              }
+            );
+          }
         });
         $("#deleteSingleBlog").click(function () {
           blogId = $("#blogId").val();
-          //console.log("delete blog")
-          $.delete("http://localhost:4000/blogs/deleteBlog/" + blogId, function (data) {
+          if (!blogId){
+            $("#blogText").html('Please enter a valid Blog ID...')
+          } else {
+            $.delete("http://localhost:4000/blogs/deleteBlog/" + blogId, function (data) {
               $("#blogTitle").html('')
               $("#blogAuthor").html('')
               $("#blogCreatedAt").html('')
               $("#blogText").html(data)
-          })
-
+            })
+          }
         })  
       });
     </script>
