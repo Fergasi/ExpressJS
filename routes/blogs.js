@@ -16,7 +16,7 @@ router.get('/', async function (req, res, next) {
         const blogs50 = await collection.find({}).sort({ id: 1 }).toArray();
         res.json(blogs50);
     } catch (e) {
-        res.status(500).send("Error fetching posts" + e)
+        res.status(500).send("* Error fetching posts" + e)
     }
 });
 
@@ -45,7 +45,7 @@ router.get('/all', async function(req, res){
         res.json(blogs50);
 
     } catch (e) {
-        res.status(500).send("Error fetching posts" + e)
+        res.status(500).send("* Error fetching posts" + e)
     }
 
     //Example URL to call this:
@@ -63,7 +63,7 @@ router.get('/singleBlog/:blogId', async function (req, res) {
         
         if (!foundBlog){
             const noBlog = {
-                text: 'This Blog does not exist...'
+                text: '* This Blog does not exist...'
             }
             res.json(noBlog)
         } else {
@@ -71,7 +71,7 @@ router.get('/singleBlog/:blogId', async function (req, res) {
         }
         
     } catch (e) {
-        res.status(500).send("Error fetching posts" + e)
+        res.status(500).send("* Error fetching posts" + e)
     }
 })
 
@@ -104,10 +104,10 @@ router.post('/submit', async (req, res) => {
 
         await collection.insertOne(blog);
 
-        res.status(200).send('Successfully posted')
+        res.status(200).send('* Successfully posted')
 
     } catch (e) {
-        res.status(500).send("Error fetching posts" + e)
+        res.status(500).send("* Error fetching posts" + e)
     }
     
     //blogs.blogPosts.push(addBlogPost(newBlog));
@@ -140,10 +140,10 @@ router.put('/updateBlog/:blogId', async function (req, res) {
             }, {
                $set: updateBlog
             });
-            res.status(200).send('Successfully Updated')
+            res.status(200).send('* Successfully Updated')
         }
     } catch (error) {
-        res.status(500).send("Error updating blog." + error)
+        res.status(500).send("* Error updating blog." + error)
     }
 })
 
@@ -164,13 +164,13 @@ router.delete('/deleteBlog/:blogId', async (req, res) => {
         const collection = await blogsDB().collection('blogs50');
         const blogToDelete = await collection.deleteOne({id: blogId})
         if (blogToDelete.deletedCount === 1) {
-            res.send('Successfully Deleted').status(200) 
+            res.send('* Successfully Deleted').status(200) 
         } else {
-           res.send('Could not find Blog ID to delete... Please enter a valid Blog ID').status(404)
+           res.send('* Could not find Blog ID to delete... Please enter a valid Blog ID').status(404)
         }
         
     } catch (error) {
-        res.status(500).send("Error, could not delete blog." + error)
+        res.status(500).send("* Error, could not delete blog." + error)
     }
 });
 
@@ -182,7 +182,7 @@ router.get('/authors', async function (req, res) {
         //console.log(authors);
         res.json(authors);
     } catch (e) {
-        res.status(500).send('Error: ' + e);
+        res.status(500).send('* Error: ' + e);
     }
 });
 

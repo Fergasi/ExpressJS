@@ -34,7 +34,7 @@
             let isText = text ? '' : '- Text';
             let isAuthor = author ? '' : '- Author';
             let isCategory = category ? '' : '- Category';
-            $('#message').html(`<div> Please enter missing fields: <div>` + `<div>${isTitle}<div>` + `<div>${isText}<div>` + `<div>${isAuthor}<div>` + `<div>${isCategory}<div>`)
+            $('#message').html(`<div> * Please enter missing fields: <div>` + `<div>${isTitle}<div>` + `<div>${isText}<div>` + `<div>${isAuthor}<div>` + `<div>${isCategory}<div>`)
           } else {
             $.post(
             "http://localhost:4000/blogs/submit",

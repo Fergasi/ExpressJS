@@ -26,7 +26,7 @@
         $("#getSingleBlog").click(function () {
           blogId = $("#blogId").val();
           if (!blogId){
-            $("#blogText").html('Please enter a valid Blog ID...')
+            $("#blogText").html('* Please enter a valid Blog ID...')
           } else {
             $.get(
              "http://localhost:4000/blogs/singleBlog/" + blogId,
@@ -42,7 +42,7 @@
         $("#deleteSingleBlog").click(function () {
           blogId = $("#blogId").val();
           if (!blogId){
-            $("#blogText").html('Please enter a valid Blog ID...')
+            $("#blogText").html('* Please enter a valid Blog ID...')
           } else {
             $.delete("http://localhost:4000/blogs/deleteBlog/" + blogId, function (data) {
               $("#blogTitle").html('')
