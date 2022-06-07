@@ -3,49 +3,70 @@
   <head>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script>
+
+      let displayBlogs = function (blogs) {
+        blogs.forEach((blog) => {
+          $("#blogList").append("<br>");
+          $("#blogList").append("<h3>" + blog.title + "</h3>");
+          $("#blogList").append("<div></div>");
+          $("#blogList").append("<div> Author: " + blog.author + "</div>");
+          $("#blogList").append("<div>" + 'Category: ' + blog.category + "</div>");
+          $("#blogList").append("<div>" + 'ID: ' + blog.id + "</div>");
+          $("#blogList").append("<br>");
+          $("#blogList").append("<div>" + blog.text + "</div>");
+          $("#blogList").append("<br>");
+          $("#blogList").append("<div> Created At: " + blog.createdAt + "</div>");
+          $("#blogList").append("<br>");
+          $("#blogList").append("<hr>");
+        });
+      }
+
         $(document).ready(function () {
-            var blogs = [];
 
-            $("#getBlogs").click(function () {
-                var sortOrder;
-                var sortField;
-                var url = "http://localhost:4000/blogs/all";
-                $("#blogList").empty();
-                sortField = "?field=" + $("#sortField option:selected").val();
-                sortOrder =  "&order=" + $("#sorting option:selected").val();
+          $.get('http://localhost:4000/blogs/authors', function (authors) {
+              authors.forEach((author) => {
+                  let encodedAuthor = author.replaceAll(" ", "-")
+                  $('#byAuthor').append(`<option value=${encodedAuthor}>${author}</option>`);
+              })
+          });
 
-                // if (sortOrder === "asc" || sortOrder === "desc"){
-                //     url = url + "?sort=" + sortOrder
-                // }
-
-                $.get(url + sortField + sortOrder, function (blogs) {
-                    blogs.forEach((blog) => {
-                    $("#blogList").append("<h3>" + blog.title + "</h3>");
-                    $("#blogList").append("<div></div>");
-                    $("#blogList").append("<div> Author: " + blog.author + "</div>");
-                    $("#blogList").append("<div> Created At: " + blog.createdAt + "</div>");
-                    $("#blogList").append("<div>" + 'ID: ' + blog.id + "</div>");
-                    $("#blogList").append("<br>");
-                    $("#blogList").append("<div>" + blog.text + "</div>");
-                    $("#blogList").append("<br>");
-                    });
-                });
-            });
+          $("#getBlogs").click(function () {
+              var sortOrder;
+              var sortField;
+              var url = "http://localhost:4000/blogs/all";
+              $("#blogList").empty();
+              sortField = "?field=" + $("#sortField option:selected").val();
+              sortOrder =  "&order=" + $("#sorting option:selected").val();
+              byAuthor =  "&author=" + $("#byAuthor option:selected").text();
+              $.get(url + sortField + sortOrder + byAuthor, function (blogs) {
+                  displayBlogs(blogs)
+              });
+          });
             
         });
     </script>
+
   </head>
-  <body>
+  <body style="background: linear-gradient(to right, #5190c4, #f7bb97);">
     <h2>
-      <a href="http://localhost:4000/blogs/displayBlogs">Display Blog</a>
+      <a href="http://localhost:4000/blogs/displaySingleBlog">Display / Delete Single Blog</a>
       <br>
-      <a href="http://localhost:4000/blogs/displaySingleBlog">Display Single Blog</a>
+      <a href="http://localhost:4000/blogs/displayBlogs">Display All Blogs</a>
+      <br>
+      <a href="http://localhost:4000/blogs/updateBlog">Update Blog</a>
       <br>
       <a href="http://localhost:4000/blogs/postBlog">Post Blog</a>
     </h2>
     <h1>Display Blogs</h1>
     <button id="getBlogs">Get Blogs</button>
+    <br>
+    <br>
+    <label for="byAuthor">By Author:</label>
 
+    <select name="byAuthor" id="byAuthor">
+        <option value="all">All</option>
+    </select>
+    
     <label for="SortField">Sort By:</label>
 
     <select name="SortField" id="sortField">

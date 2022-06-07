@@ -49,3 +49,36 @@
 * Create a new GET route /blogs/displaysingleblog that will render the displayBlogs page to the browser. Test that the page and /blogs/singleblog/:blogId route works by entering a blogId into the input field and clicking "Get Single Blog"
 * Implement the delete single blog functionality. Hint: you will have to create a new route in the blogs.js file to handle the delete. The route should use a ROUTE PARAM to specify which blog to delete. I.E. /blogs/deleteblog/:blogId.
 * Stretch Goal: Implement the PUT route for modifying a single blog. It will be a new route in blogs.js. You can copy much of the html and functionality from postBlog.ejs into displaySingleBlog.ejs. Except now when you make the PUT request, you'll have to send through the blogId you want to modify as a route param (similar to the DELETE route you just created), get the values from the input fields using jQuery, and send those through with the PUT request to update the specified blog.
+
+
+# MongoDB-Express-Persist.js
+## Connecting Blogs CRUD App to Mongo DB
+
+Connecting to Mongo: https://www.mongodb.com/docs/drivers/node/current/fundamentals/connection/
+
+* Open your ExpressJSExample folder and run 'npm i mongodb dotenv'
+* Create a new file in the root of the project that should be on the same level as the package.json, the file name should be .env
+* Add the following env variables to the .env file and set their value to YOUR configurations (replace angle brackets with your values)
+  - MONGO_URI = mongodb+srv://<USERNAME>:<PASSWORD>@<CLUSTER>.mongodb.net/?retryWrites=true&w=majority
+  - MONGO_DATABASE = blog
+* Create a new file on the same level as app.js called mongo.js. Copy the provided code into mongo.js
+* In app.js add the following code ABOVE var app = express();
+  - var {mongoConnect} = require('./mongo.js');
+    mongoConnect();
+* Start your server, you should see the console log message "Connected successfully to server" if everything has been set up correctly
+* In routes/blogs.js, create a new import for blogsDB
+  - const { blogsDB } = require("../mongo");
+* Update the /blogs/ GET route to be an async function that returns the full collection of posts from the mongo database:
+  - router.get("/", async function (req, res, next) {
+      const collection = await blogsDB().collection("posts");
+      const posts = await collection.find({}).toArray();
+      res.json(posts);
+    });
+* Test this new functionality by navigating to localhost:4000/blogs and checking that the result is a list of all blog posts in the database
+* Update all /blog routes in blogs.js to use the posts database collection instead of sampleBlogs.js
+* Stretch Goal 1: Add field level validation to the new blog post submit functionality. I.E. for the /submit route, check to see that the user has correctly inputted all required fields and that they are the correct type. If the validation fails, do not let the user save the post.
+* Stretch Goal 2: If there is a validation level error (such as a user not including an author name on a new post), send that specific error to the client/browser and display it so the user can see it. The user should be able to adjust their input values as necessary and resubmit. 
+* Stretch Goal 3: Add the frontend and backend functionality necessary to display all blogs submitted by a particular author by adding a dropdown menu with the author list. Approach:
+  - Create a new GET route /authors that returns a list of authors to the browser. You may need to make a new button in the browser that will fetch this list from the server onClick.
+  - Display the fetched list of authors as a dropdown field.
+  - When the user selects a particular author from the dropdown, the browser should make a request to the /blogs/all route with the author as a filter param. The response should be a list of blog posts for that particular author. Display that list of fetched blogs to the user on the page.

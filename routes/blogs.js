@@ -25,6 +25,12 @@ router.get('/all', async function(req, res){
     try {
         let sortField = req.query.field;
         let sort = req.query.order;
+        let authorQuery = req.query.author;
+        let findAuthor = {};
+
+        if (authorQuery !== 'All'){
+            findAuthor = {author: `${authorQuery}`}
+        }
 
         if (sort === 'asc'){
             sort = 1
@@ -32,9 +38,9 @@ router.get('/all', async function(req, res){
         if (sort === 'desc'){
             sort = -1
         }
-
+        console.log(findAuthor)
         const collection = await blogsDB().collection("blogs50");
-        const blogs50 = await collection.find({}).sort({ [sortField]: sort }).toArray();
+        const blogs50 = await collection.find(findAuthor).sort({ [sortField]: sort }).toArray();
 
         res.json(blogs50);
 
@@ -50,13 +56,20 @@ router.get('/all', async function(req, res){
 /* GET blog by ID. */
 router.get('/singleBlog/:blogId', async function (req, res) {
     try {
-        const blogId = req.params.blogId;
+        const blogId = Number(req.params.blogId);
 
         const collection = await blogsDB().collection("blogs50");
-        const blogs50 = await collection.findOne({id: Number(blogId)});
-
-        res.json(blogs50);
-
+        const foundBlog = await collection.findOne({id: blogId});
+        
+        if (!foundBlog){
+            const noBlog = {
+                text: 'This Blog does not exist...'
+            }
+            res.json(noBlog)
+        } else {
+            res.json(foundBlog);
+        }
+        
     } catch (e) {
         res.status(500).send("Error fetching posts" + e)
     }
@@ -67,13 +80,17 @@ router.get('/postBlog', (req, res, next) => {
     res.render('postBlog');
 })
 
+//Update Blogs Router
+router.get('/updateBlog', (req, res, next) => {
+    res.render('updateBlog');
+})
+
 //Submit Post Blog Router
 router.post('/submit', async (req, res) => {
     try {
-        res.status(201);
         const collection = await blogsDB().collection("blogs50");
         const sortedBlogArray =  await collection.find({}).sort({ id: 1 }).toArray();
-        lastBlog = sortedBlogArray[sortedBlogArray.length - 1]
+        const lastBlog = sortedBlogArray[sortedBlogArray.length - 1]
 
         let blog = {
             createdAt: new Date(),
@@ -87,13 +104,47 @@ router.post('/submit', async (req, res) => {
 
         await collection.insertOne(blog);
 
-        //res.json(newBlog + 'Successful!');
+        res.status(200).send('Successfully posted')
 
     } catch (e) {
         res.status(500).send("Error fetching posts" + e)
     }
     
     //blogs.blogPosts.push(addBlogPost(newBlog));
+})
+
+//Update Blog Router
+router.put('/updateBlog/:blogId', async function (req, res) {
+    try {
+        const collection = await blogsDB().collection('blogs50');
+        const blogId = Number(req.params.blogId);
+        const originalBlog = await collection.findOne({id: blogId});
+
+        if (!originalBlog){
+            res.send('Blog with ID: ' + blogId) + 'does not exist'
+        } else {
+            let updateBlog = req.body;
+            const blogTitle = updateBlog.title ? updateBlog.title : originalBlog.title;
+            const blogText = updateBlog.text ? updateBlog.text : originalBlog.text;
+            const blogAuthor = updateBlog.author ? updateBlog.author : originalBlog.author;
+            const blogCategory = updateBlog.category ? updateBlog.category : originalBlog.category;
+            updateBlog = {
+              lastModified: new Date(),
+              title: blogTitle,
+              text: blogText,
+              author: blogAuthor,
+              category: blogCategory,
+            };
+            await collection.updateOne({
+               id: blogId
+            }, {
+               $set: updateBlog
+            });
+            res.status(200).send('Successfully Updated')
+        }
+    } catch (error) {
+        res.status(500).send("Error updating blog." + error)
+    }
 })
 
 //Display Blogs Router
@@ -107,22 +158,30 @@ router.get('/displaySingleBlog', (req, res, next) => {
 })
 
 //Delete Single Blog Router
-router.delete('/deleteBlog/:blogId', (req, res, next) => {
-    const blogToDelete = req.params.blogId;
-    
-    for (let i = 0; i < blogPosts.length; i++){
-        let blog = blogPosts[i];
-        if (blog.id === blogToDelete){
-            blogPosts.splice(i,1);
-        }
+router.delete('/deleteBlog/:blogId', async (req, res) => {
+    try {
+        const blogId = Number(req.params.blogId);
+        const collection = await blogsDB().collection('blogs50');
+        await collection.deleteOne({id: blogId})
+        res.status(200).send('Successfully Deleted')
+    } catch (error) {
+        res.status(500).send("Error, could not delete blog." + error)
     }
+});
 
-   res.send('successfully deleted');
-})
+//Get Authors Route
+router.get('/authors', async function (req, res) {
+    try {
+        const collection = await blogsDB().collection('blogs50');
+        const authors = await collection.distinct('author');
+        //console.log(authors);
+        res.json(authors);
+    } catch (e) {
+        res.status(500).send('Error: ' + e);
+    }
+});
 
-module.exports = router;
-
-//Helper Functions
+///////// Helper Functions ///////////
 
 //Find by ID
 let findBlogId = (id) => {
@@ -191,3 +250,5 @@ let addBlogPost = (body) => {
     }
     return blog
 }
+
+module.exports = router;
